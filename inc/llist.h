@@ -2,12 +2,13 @@
 #define LLIST_H_
 
 struct LinkedList {
-    int* data     = NULL;
-    int* next     = NULL;
-    int* prev     = NULL;
-    int  size     = 0;
-    int  capacity = 0;
-    int  free     = 0;
+    int* data           = NULL;
+    int* next           = NULL;
+    int* prev           = NULL;
+    int  size           = 0;
+    int  capacity       = 0;
+    int  free           = 0;
+    int  start_capacity = 0;
 };
 
 TYPE_OF_ERROR llistCtor(LinkedList* llist, int capacity);
