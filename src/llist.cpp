@@ -69,15 +69,15 @@ TYPE_OF_ERROR llistDump(LinkedList* llist) {
 
     warning(dump_file, FILE_OPEN_ERROR);
 
-    fprintf(dump_file, "digraph llist{\nsplines=ortho;\nnodesep=0.4;\nnode [shape=record, fontname=\"Arial\"];\n"
+    fprintf(dump_file, "digraph llist{\nrankdir=LR;\nnodesep=0.4;\nnode [shape=record, fontname=\"Arial\"];\n"
                        "edge [style=bold, color=\"#009700:black;0.001\", weight=0, penwidth=3, "
                        "arrowsize=0.5];\n");
 
     fprintf(dump_file, "0 ");
-    fprintf(dump_file, "[style = \"filled, rounded\", fillcolor=\"#1fcbf2\", label=\"{ index = %d | data = %d | next = %d | prev = %d }\" ];\n", 0, llist->data[0], llist->next[0], llist->prev[0]);
+    fprintf(dump_file, "[style = \"filled, rounded\", fillcolor=\"#1fcbf2\", label=\" index = %d | data = %d | next = %d | prev = %d\" ];\n", 0, llist->data[0], llist->next[0], llist->prev[0]);
     for(int i = 1; i < llist->capacity; i++) {
         fprintf(dump_file, "%d ", i);
-        fprintf(dump_file, "[style = \"filled, rounded\", fillcolor=\"#f2291f\", label=\"{ index = %d | data = %d | next = %d | prev = %d }\" ];\n", i, llist->data[i], llist->next[i], llist->prev[i]);
+        fprintf(dump_file, "[style = \"filled, rounded\", fillcolor=\"#f2291f\", label=\" index = %d | data = %d | next = %d | prev = %d\" ];\n", i, llist->data[i], llist->next[i], llist->prev[i]);
     }
 
     fprintf(dump_file, "free [style = \"filled, rounded\", fillcolor=\"#26e5a2\", label=\"free = %d\" ];\n", llist->free);
@@ -89,12 +89,6 @@ TYPE_OF_ERROR llistDump(LinkedList* llist) {
 
         i = llist->next[i];
     }
-
-    fprintf(dump_file, "{ rank = same; ");
-    for(int i = 0; i < llist->capacity; i++) {
-        fprintf(dump_file, "%d; ", i);
-    }
-    fprintf(dump_file, "}\n");
 
     for(int i = 0; i < llist->capacity - 1; i++) {
         fprintf(dump_file, "%d->", i);
