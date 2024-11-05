@@ -14,11 +14,13 @@ int main() {
     pushBack(&llist, 20);
     pushBack(&llist, 30);
     pushBack(&llist, 40);
-    pushBack(&llist, 40);
-    pushBack(&llist, 40);
-    erase(&llist, 3);
-
-
+    pushBack(&llist, 50);
+    pushBack(&llist, 60);
+    pushBack(&llist, 70);
+    pushBack(&llist, 80);
+    // pushBack(&llist, 90);
+    insertAfter(&llist, 5, 0);
+    popBack(&llist);
 
     llistDump(&llist);
 
@@ -29,23 +31,16 @@ TYPE_OF_ERROR pushBack(LinkedList* llist, int element) {
     check_expression(llist, POINTER_IS_NULL);
     check_expression(llist->free != 0, VALUE_ERROR);
 
-    int index                   = llist->free;
-    llist->free                 = llist->next[llist->free];
-
-    llist->data[index]          = element;
-    llist->next[index]          = 0;
-    llist->prev[index]          = llist->prev[0];
-
-    llist->next[llist->prev[0]] = index;
-    llist->prev[llist->free]    = 0;
-    llist->prev[0]              = index;
+    insertAfter(llist, element, llist->prev[0]);
 
     return SUCCESS;
 }
 
 TYPE_OF_ERROR popBack(LinkedList* llist) {
     check_expression(llist, POINTER_IS_NULL);
-    check_expression(llist->free != 0, VALUE_ERROR);
+    check_expression(llist->size != 0, POINTER_IS_NULL);
+
+    erase(llist, llist->prev[0]);
 
     return SUCCESS;
 }
@@ -53,27 +48,35 @@ TYPE_OF_ERROR popBack(LinkedList* llist) {
 TYPE_OF_ERROR insertAfter(LinkedList* llist, int element, int index) {
     check_expression(llist, POINTER_IS_NULL);
     check_expression(llist->free != 0, VALUE_ERROR);
-    check_expression(index != llist->capacity - 2, VALUE_ERROR);
-    check_expression(index != llist->capacity - 2, VALUE_ERROR);
-    check_expression(index != llist->capacity - 2, VALUE_ERROR);
+    check_expression(index != llist->capacity - 1, VALUE_ERROR);
 
-    int actual_index     = index + 1;
-    int next_after_index = llist->next[actual_index];
-
-    llist->data[llist->free]               = element;
-    llist->prev[llist->next[llist->free]]  = 0;
-    llist->next[actual_index]              = llist->free;
-    llist->free                            = llist->next[llist->free];
-    llist->next[llist->next[actual_index]] = next_after_index;
-    llist->prev[llist->next[actual_index]] = actual_index;
-    llist->prev[llist->next[llist->next[actual_index]]] = llist->next[actual_index];
+    int next_after_index            = llist->next[index];
+    llist->data[llist->free]        = element;
+    llist->next[index]              = llist->free;
+    llist->free                     = llist->next[llist->free];
+    llist->next[llist->next[index]] = next_after_index;
+    llist->prev[llist->next[index]] = index;
+    llist->prev[llist->next[llist->next[index]]] = llist->next[index];
+    llist->size++;
 
     return SUCCESS;
+}
 
+TYPE_OF_ERROR pushFront(LinkedList* llist, int element) {
+    check_expression(llist, POINTER_IS_NULL);
+
+    insertAfter(llist, element, 0);
+
+    return SUCCESS;
 }
 
 TYPE_OF_ERROR erase(LinkedList* llist, int index) {
     check_expression(llist, POINTER_IS_NULL);
+
+    // int physical_index = 0;
+    // for(int i = 0; i <= index; i++) {
+    //     physical_index = llist->next[physical_index];
+    // }
 
     llist->data[index] = -1;
     llist->next[llist->prev[index]] = llist->next[index];
@@ -82,6 +85,7 @@ TYPE_OF_ERROR erase(LinkedList* llist, int index) {
     llist->prev[index] = 0;
     llist->prev[llist->next[index]] = index;
     llist->free = index;
+    llist->size--;
 
     return SUCCESS;
 }
@@ -104,6 +108,9 @@ TYPE_OF_ERROR llistDump(LinkedList* llist) {
         fprintf(dump_file, "%d ", i);
         fprintf(dump_file, "[style = \"filled, rounded\", fillcolor=\"#f2291f\", label=\" {index = %d | data = %d | next = %d | prev = %d}\" ];\n", i, llist->data[i], llist->next[i], llist->prev[i]);
     }
+
+    fprintf(dump_file, "size ");
+    fprintf(dump_file, "[style = \"filled, rounded\", fillcolor=\"#ffe41f\", label=\" {size = %d}\" ];\n", llist->size);
 
     fprintf(dump_file, "free [style = \"filled, rounded\", fillcolor=\"#26e5a2\", label=\"free = %d\" ];\n", llist->free);
 
