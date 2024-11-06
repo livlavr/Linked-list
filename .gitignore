@@ -33,6 +33,7 @@
 *.txt
 test*
 build/
+.DS_Store
 
 #dSYM
 

@@ -18,7 +18,6 @@ int main() {
     // pushBack(&llist, 50);
     // pushBack(&llist, 60);
     // pushBack(&llist, 70);
-
     llistDump(&llist);
 
     llistDtor(&llist);

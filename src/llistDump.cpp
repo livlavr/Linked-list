@@ -43,11 +43,19 @@ TYPE_OF_ERROR llistDump(LinkedList* llist) {
 
     //Change color of all free elements to green
     i = llist->free;
+    int count_elements = 0;
     while(i != 0) {
+        if(count_elements >= llist->capacity) {
+            color_printf(RED_TEXT, BOLD, "ERROR: too many iterations in Dump\n");
+            color_printf(RED_TEXT, BOLD, "Probably you did invalid operation (Used bad index for example)\n");
+
+            check_expression(count_elements < llist->capacity, PROGRAM_ERROR);
+        }
         fprintf(dump_file, "%d ", i);
         fprintf(dump_file, "[style = \"filled, rounded\", fillcolor=\"#26e5a2\"];\n");
 
         i = llist->next[i];
+        count_elements++;
     }
 
     //Set rank
@@ -72,10 +80,18 @@ TYPE_OF_ERROR llistDump(LinkedList* llist) {
 
     //Set "prev" relations (red arrows)
     i = 0;
+    count_elements = 0;
     do {
+        if(count_elements >= llist->capacity) {
+            color_printf(RED_TEXT, BOLD, "ERROR: too many iterations in Dump\n");
+            color_printf(RED_TEXT, BOLD, "Probably you did invalid operation (Used bad index for example)\n");
+
+            check_expression(count_elements < llist->capacity, PROGRAM_ERROR);
+        }
         fprintf(dump_file, "%d->%d;\n", i, llist->prev[i]);
         i = llist->prev[i];
-    }while(i != 0);
+        count_elements++;
+    } while(i != 0);
 
     fprintf(dump_file, "}\n");
 
