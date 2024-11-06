@@ -2,4 +2,6 @@
 [] Ошибка при вставке после пустого элемента
 [] Добавить счётчик в цикл дампа
 [] Physical index by logical
-[] Add comments
+[x] Add comments
+[] should i check is element empty in erase func and itc?
+[] sanitizer in all my projects

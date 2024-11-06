@@ -5,30 +5,19 @@
 #include "custom_asserts.h"
 #include "debug_macros.h"
 #include "llist.h"
+#include "llistDump.h"
 
 int main() {
     LinkedList llist = {};
     llistCtor(&llist, 10);
 
     pushBack(&llist, 10);
-    pushBack(&llist, 20);
-    pushBack(&llist, 30);
-    pushBack(&llist, 40);
-    pushBack(&llist, 50);
-    pushBack(&llist, 60);
-    pushBack(&llist, 70);
-    insertAfter(&llist, 5, 0);
-    insertAfter(&llist, 35, 3);
-    insertAfter(&llist, 90, 7);
-    popBack(&llist);
-    popBack(&llist);
-    popBack(&llist);
-    popBack(&llist);
-    insertAfter(&llist, 90, 4);
-    insertAfter(&llist, 90, 4);
-    insertAfter(&llist, 90, 4);
-    insertAfter(&llist, 90, 4);
-    insertAfter(&llist, 90, 4);
+    // pushBack(&llist, 20);
+    // pushBack(&llist, 30);
+    // pushBack(&llist, 40);
+    // pushBack(&llist, 50);
+    // pushBack(&llist, 60);
+    // pushBack(&llist, 70);
 
     llistDump(&llist);
 
@@ -66,12 +55,18 @@ TYPE_OF_ERROR llistCtor(LinkedList* llist, int capacity) {
     llist->prev[0] = 0;
     llist->next[0] = 0;
 
+    setDumpFile(llist);
+
     return SUCCESS;
 }
 
 TYPE_OF_ERROR pushBack(LinkedList* llist, int element) {
     check_expression(llist, POINTER_IS_NULL);
-    check_expression(llist->free != 0, VALUE_ERROR);
+    if(llist->free == 0) {
+        color_printf(RED_TEXT, BOLD, "ERROR: Linked-List is full\n");
+
+        check_expression(llist->free != 0, VALUE_ERROR);
+    }
 
     insertAfter(llist, element, llist->prev[0]);
 
@@ -80,7 +75,11 @@ TYPE_OF_ERROR pushBack(LinkedList* llist, int element) {
 
 TYPE_OF_ERROR popBack(LinkedList* llist) {
     check_expression(llist, POINTER_IS_NULL);
-    check_expression(llist->size != 0, POINTER_IS_NULL);
+    if(llist->size == 0) {
+        color_printf(RED_TEXT, BOLD, "ERROR: Linked-List is empty\n");
+
+        check_expression(llist->size != 0, POINTER_IS_NULL);
+    }
 
     erase(llist, llist->prev[0]);
 
@@ -89,8 +88,11 @@ TYPE_OF_ERROR popBack(LinkedList* llist) {
 
 TYPE_OF_ERROR insertAfter(LinkedList* llist, int element, int index) { //TODO rename index
     check_expression(llist,                              POINTER_IS_NULL);
-    check_expression(llist->free != 0,                   VALUE_ERROR);
-    check_expression(index       != llist->capacity - 1, VALUE_ERROR);
+    if(llist->free == 0) {
+        color_printf(RED_TEXT, BOLD, "ERROR: Linked-List is full\n");
+
+        check_expression(llist->free != 0, VALUE_ERROR);
+    }
 
     //Add element to data
     llist->data[llist->free] = element;
@@ -118,6 +120,11 @@ TYPE_OF_ERROR insertAfter(LinkedList* llist, int element, int index) { //TODO re
 
 TYPE_OF_ERROR pushFront(LinkedList* llist, int element) {
     check_expression(llist, POINTER_IS_NULL);
+    if(llist->free == 0) {
+        color_printf(RED_TEXT, BOLD, "ERROR: Linked-List is full\n");
+
+        check_expression(llist->free != 0, VALUE_ERROR);
+    }
 
     insertAfter(llist, element, 0);
 
@@ -147,82 +154,6 @@ TYPE_OF_ERROR erase(LinkedList* llist, int index) {
 
     //Size down
     llist->size--;
-
-    return SUCCESS;
-}
-
-TYPE_OF_ERROR llistDump(LinkedList* llist) {
-    check_expression(llist, POINTER_IS_NULL);
-
-    FILE* dump_file = fopen("dump.dot", "w");
-
-    warning(dump_file, FILE_OPEN_ERROR);
-
-    //Header of graphviz file
-    fprintf(dump_file, "digraph llist{\nsplines=ortho;\nrankdir=HR;\nnodesep=0.4;"
-                       "\nnode [shape=record, fontname=\"Arial\"];\n"
-                       "edge [style=bold, color=\"#009700:black;0.001\", weight=10, penwidth=2.5, "
-                       "arrowsize=0.4];\n");
-
-    //Output zero index (service element)
-    fprintf(dump_file, "0 ");
-    fprintf(dump_file, "[style = \"filled, rounded\", fillcolor=\"#1fcbf2\", label=\" {index = %d | data = %d | next = %d | prev = %d}\" ];\n", 0, llist->data[0], llist->next[0], llist->prev[0]);
-
-    //Output all other elements
-    int i = 1;
-    for(i = 1; i < llist->capacity; i++) {
-        fprintf(dump_file, "%d ", i);
-        fprintf(dump_file, "[style = \"filled, rounded\", fillcolor=\"#f2291f\", label=\" {index = %d | data = %d | next = %d | prev = %d}\" ];\n", i, llist->data[i], llist->next[i], llist->prev[i]);
-    }
-
-    //Output size of linked-list
-    fprintf(dump_file, "size ");
-    fprintf(dump_file, "[style = \"filled, rounded\", fillcolor=\"#ffe41f\", label=\" {size = %d}\" ];\n", llist->size);
-
-    //Output first free cell
-    fprintf(dump_file, "free [style = \"filled, rounded\", fillcolor=\"#26e5a2\", label=\"free = %d\" ];\n", llist->free);
-
-    //Change color of all free elements to green
-    i = llist->free;
-    while(i != 0) {
-        fprintf(dump_file, "%d ", i);
-        fprintf(dump_file, "[style = \"filled, rounded\", fillcolor=\"#26e5a2\"];\n");
-
-        i = llist->next[i];
-    }
-
-    //Set rank
-    fprintf(dump_file, "{ rank = same; ");
-    for(i = 0; i < llist->capacity; i++) {
-        fprintf(dump_file, "%d; ", i);
-    }
-    fprintf(dump_file, "}\n");
-
-    //Set "next" relations (green arrows)
-    fprintf(dump_file, "free->%d;\n", llist->free);
-    for(i = 0; i < llist->capacity; i++) {
-        if(i && llist->next[i]) {
-            fprintf(dump_file, "%d->%d;\n", i, llist->next[i]);
-        }
-    }
-    fprintf(dump_file, "0->%d;\n", llist->next[0]);
-    fprintf(dump_file, "%d->0;\n", llist->prev[0]);
-
-    //Change arrows color
-    fprintf(dump_file, "edge [style=bold, color=\"#891728:black;0.001\", weight=0, penwidth=2.5, arrowsize=0.4];\n");
-
-    //Set "prev" relations (red arrows)
-    i = 0;
-    do {
-        fprintf(dump_file, "%d->%d;\n", i, llist->prev[i]);
-        i = llist->prev[i];
-    }while(i != 0);
-
-    fprintf(dump_file, "}\n");
-
-    fclose(dump_file);
-
-    system("dot -Tpng dump.dot -o dump.png");
 
     return SUCCESS;
 }

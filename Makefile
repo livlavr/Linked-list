@@ -1,6 +1,6 @@
 CXX           = gcc-14
 
-SRC           = llist.cpp
+SRC           = llist.cpp llistDump.cpp
 SUBMODULE_SRC = Custom-asserts/Color/color_printf.cpp
 
 BUILD_DIR     = ./build/
@@ -43,7 +43,7 @@ all : $(addprefix $(SRC_DIR), $(SRC))
 	$(addprefix $(BUILD_DIR), $(TARGET))
 
 clean :
-	@rm -f -r $(addprefix $(BUILD_DIR), *.o) $(TARGET) *.dSYM
+	@rm -f -r $(addprefix $(BUILD_DIR), *.o) $(TARGET) *.dSYM Llist-dumps/*
 	@printf  "$(YELLOW_TEXT)$(TARGET) CLEANED$(DEFAULT_TEXT)\n"
 
 doxy :
