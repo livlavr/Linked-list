@@ -16,8 +16,8 @@ int main() {
     pushBack(&llist, 40);
     pushBack(&llist, 50);
     pushBack(&llist, 60);
-    pushBack(&llist, 70);
-    pushBack(&llist, 80);
+    // pushBack(&llist, 70);
+    // pushBack(&llist, 80);
     // pushBack(&llist, 90);
     insertAfter(&llist, 5, 0);
     popBack(&llist);
