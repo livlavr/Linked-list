@@ -134,10 +134,14 @@ TYPE_OF_ERROR setDumpFile(LinkedList* llist)
 }
 
 inline TYPE_OF_ERROR processFilename(char* filename) {
-    for(int i = 0; i < strlen(filename); i++) {
-        if(filename[i] == ' ') {
-            filename[i] = '_';
-        }
+    check_expression(filename, POINTER_IS_NULL);
+
+    char* filename_ptr = filename;
+    filename_ptr = strchr(filename_ptr, ' ');
+    while(filename_ptr != NULL)
+    {
+        *filename_ptr = '_';
+        filename_ptr  = strchr(filename_ptr, ' ');
     }
 
     return SUCCESS;

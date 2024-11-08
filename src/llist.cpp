@@ -12,9 +12,9 @@ int main() {
     llistCtor(&llist, 10);
 
     pushBack(&llist, 10);
-    // pushBack(&llist, 20);
-    // pushBack(&llist, 30);
-    // pushBack(&llist, 40);
+    pushBack(&llist, 20);
+    pushBack(&llist, 30);
+    pushBack(&llist, 40);
     // pushBack(&llist, 50);
     // pushBack(&llist, 60);
     // pushBack(&llist, 70);
@@ -86,11 +86,16 @@ TYPE_OF_ERROR popBack(LinkedList* llist) {
 }
 
 TYPE_OF_ERROR insertAfter(LinkedList* llist, int element, int index) { //TODO rename index
-    check_expression(llist,                              POINTER_IS_NULL);
+    check_expression(llist, POINTER_IS_NULL);
     if(llist->free == 0) {
         color_printf(RED_TEXT, BOLD, "ERROR: Linked-List is full\n");
 
-        check_expression(llist->free != 0, VALUE_ERROR);
+        check_expression(llist->free != 0, VALUE_ERROR); //TODO if ndebug it will turn off
+    }
+    if(llist->prev[index] == -1) {
+        color_printf(RED_TEXT, BOLD, "ERROR: You trying to insert element after free cell\n");
+
+        check_expression(llist->prev[index] != -1, INPUT_ERROR);
     }
 
     //Add element to data
