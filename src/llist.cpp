@@ -59,7 +59,7 @@ TYPE_OF_ERROR llistCtor(LinkedList* llist, int capacity) {
     return SUCCESS;
 }
 
-TYPE_OF_ERROR pushBack(LinkedList* llist, int element) {
+TYPE_OF_ERROR pushBack(LinkedList* llist, int element) { // TODO linkedListPushBack
     check_expression(llist, POINTER_IS_NULL);
     if(llist->free == 0) {
         color_printf(RED_TEXT, BOLD, "ERROR: Linked-List is full\n");
