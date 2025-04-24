@@ -1,6 +1,3 @@
-[submodule "Debug-macros"]
-	path = Debug-macros
-	url = git@github.com:livlavr/Debug-macros.git
 [submodule "Custom-asserts"]
 	path = Custom-asserts
 	url = git@github.com:livlavr/Custom-asserts.git

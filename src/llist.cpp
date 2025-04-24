@@ -1,41 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "llistErrors.h"
 #include "color_printf.h"
 #include "custom_asserts.h"
-#include "debug_macros.h"
 #include "llist.h"
 #include "llistDump.h"
 
-int main() {
-    LinkedList llist = {};
-    llistCtor(&llist, 10);
-
-    pushBack(&llist, 10);
-    pushBack(&llist, 20);
-    pushBack(&llist, 30);
-    pushBack(&llist, 40);
-    // pushBack(&llist, 50);
-    // pushBack(&llist, 60);
-    // pushBack(&llist, 70);
-    llistDump(&llist);
-
-    llistDtor(&llist);
-}
-
-TYPE_OF_ERROR llistCtor(LinkedList* llist, int capacity) {
-    check_expression(llist, POINTER_IS_NULL);
-    check_expression(capacity > 0, VALUE_ERROR);
+LlistErrors llistCtor(LinkedList* llist, int capacity) {
+    warning(llist, NULL_POINTER_ERROR);
+    warning(capacity > 0, VALUE_ERROR);
 
     int actual_capacity = capacity + 1;
     llist->data = (int*)calloc(capacity, sizeof(int));
-    warning(llist->data, CALLOC_ERROR);
+    warning(llist->data, ALLOCATION_ERROR);
 
     llist->next = (int*)calloc(capacity, sizeof(int));
-    warning(llist->next, CALLOC_ERROR);
+    warning(llist->next, ALLOCATION_ERROR);
 
     llist->prev = (int*)calloc(capacity, sizeof(int));
-    warning(llist->prev, CALLOC_ERROR);
+    warning(llist->prev, ALLOCATION_ERROR);
 
     llist->capacity = actual_capacity;
     llist->size     = 0;
@@ -59,43 +43,43 @@ TYPE_OF_ERROR llistCtor(LinkedList* llist, int capacity) {
     return SUCCESS;
 }
 
-TYPE_OF_ERROR pushBack(LinkedList* llist, int element) { // TODO linkedListPushBack
-    check_expression(llist, POINTER_IS_NULL);
+LlistErrors llistPushBack(LinkedList* llist, int element) {
+    warning(llist, NULL_POINTER_ERROR);
     if(llist->free == 0) {
-        color_printf(RED_TEXT, BOLD, "ERROR: Linked-List is full\n");
+        color_printf(RED_COLOR, BOLD, "ERROR: Linked-List is full\n");
 
-        check_expression(llist->free != 0, VALUE_ERROR);
+        warning(llist->free != 0, VALUE_ERROR);
     }
 
-    insertAfter(llist, element, llist->prev[0]);
+    llistInsertAfter(llist, element, llist->prev[0]);
 
     return SUCCESS;
 }
 
-TYPE_OF_ERROR popBack(LinkedList* llist) {
-    check_expression(llist, POINTER_IS_NULL);
+LlistErrors llistPopBack(LinkedList* llist) {
+    warning(llist, NULL_POINTER_ERROR);
     if(llist->size == 0) {
-        color_printf(RED_TEXT, BOLD, "ERROR: Linked-List is empty\n");
+        color_printf(RED_COLOR, BOLD, "ERROR: Linked-List is empty\n");
 
-        check_expression(llist->size != 0, POINTER_IS_NULL);
+        warning(llist->size != 0, NULL_POINTER_ERROR);
     }
 
-    erase(llist, llist->prev[0]);
+    llistErase(llist, llist->prev[0]);
 
     return SUCCESS;
 }
 
-TYPE_OF_ERROR insertAfter(LinkedList* llist, int element, int index) { //TODO rename index
-    check_expression(llist, POINTER_IS_NULL);
+LlistErrors llistInsertAfter(LinkedList* llist, int element, int index) {
+    warning(llist, NULL_POINTER_ERROR);
     if(llist->free == 0) {
-        color_printf(RED_TEXT, BOLD, "ERROR: Linked-List is full\n");
+        color_printf(RED_COLOR, BOLD, "ERROR: Linked-List is full\n");
 
-        check_expression(llist->free != 0, VALUE_ERROR); //TODO if ndebug it will turn off
+        warning(llist->free != 0, VALUE_ERROR); //TODO if ndebug it will turn off
     }
     if(llist->prev[index] == -1) {
-        color_printf(RED_TEXT, BOLD, "ERROR: You trying to insert element after free cell\n");
+        color_printf(RED_COLOR, BOLD, "ERROR: You trying to insert element after free cell\n");
 
-        check_expression(llist->prev[index] != -1, INPUT_ERROR);
+        warning(llist->prev[index] != -1, INPUT_ERROR);
     }
 
     //Add element to data
@@ -122,21 +106,21 @@ TYPE_OF_ERROR insertAfter(LinkedList* llist, int element, int index) { //TODO re
     return SUCCESS;
 }
 
-TYPE_OF_ERROR pushFront(LinkedList* llist, int element) {
-    check_expression(llist, POINTER_IS_NULL);
+LlistErrors llistPushFront(LinkedList* llist, int element) {
+    warning(llist, NULL_POINTER_ERROR);
     if(llist->free == 0) {
-        color_printf(RED_TEXT, BOLD, "ERROR: Linked-List is full\n");
+        color_printf(RED_COLOR, BOLD, "ERROR: Linked-List is full\n");
 
-        check_expression(llist->free != 0, VALUE_ERROR);
+        warning(llist->free != 0, VALUE_ERROR);
     }
 
-    insertAfter(llist, element, 0);
+    llistInsertAfter(llist, element, 0);
 
     return SUCCESS;
 }
 
-TYPE_OF_ERROR erase(LinkedList* llist, int index) {
-    check_expression(llist, POINTER_IS_NULL);
+LlistErrors llistErase(LinkedList* llist, int index) {
+    warning(llist, NULL_POINTER_ERROR);
 
     //Poison data value
     llist->data[index] = -1;
@@ -162,7 +146,7 @@ TYPE_OF_ERROR erase(LinkedList* llist, int index) {
     return SUCCESS;
 }
 
-TYPE_OF_ERROR llistDtor(LinkedList* llist) {
+LlistErrors llistDtor(LinkedList* llist) {
     llist->capacity = 0;
     llist->free     = 0;
     llist->size     = 0;

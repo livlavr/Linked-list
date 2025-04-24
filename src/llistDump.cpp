@@ -3,15 +3,15 @@
 #include <string.h>
 #include <time.h>
 
+#include "llistErrors.h"
 #include "custom_asserts.h"
-#include "debug_macros.h"
 #include "llist.h"
 #include "llistDump.h"
 
 static const size_t SIZE_OF_BUFFER = 40;
 
-TYPE_OF_ERROR llistDump(LinkedList* llist) {
-    check_expression(llist, POINTER_IS_NULL);
+LlistErrors llistDump(LinkedList* llist) {
+    warning(llist, NULL_POINTER_ERROR);
 
     FILE* dump_file = fopen("Dump-source/dump.dot", "w");
 
@@ -46,10 +46,10 @@ TYPE_OF_ERROR llistDump(LinkedList* llist) {
     int count_elements = 0;
     while(i != 0) {
         if(count_elements >= llist->capacity) {
-            color_printf(RED_TEXT, BOLD, "ERROR: too many iterations in Dump\n");
-            color_printf(RED_TEXT, BOLD, "Probably you did invalid operation (Used bad index for example)\n");
+            color_printf(RED_COLOR, BOLD, "ERROR: too many iterations in Dump\n");
+            color_printf(RED_COLOR, BOLD, "Probably you did invalid operation (Used bad index for example)\n");
 
-            check_expression(count_elements < llist->capacity, PROGRAM_ERROR);
+            warning(count_elements < llist->capacity, PROGRAM_ERROR);
         }
         fprintf(dump_file, "%d ", i);
         fprintf(dump_file, "[style = \"filled, rounded\", fillcolor=\"#26e5a2\"];\n");
@@ -83,10 +83,10 @@ TYPE_OF_ERROR llistDump(LinkedList* llist) {
     count_elements = 0;
     do {
         if(count_elements >= llist->capacity) {
-            color_printf(RED_TEXT, BOLD, "ERROR: too many iterations in Dump\n");
-            color_printf(RED_TEXT, BOLD, "Probably you did invalid operation (Used bad index for example)\n");
+            color_printf(RED_COLOR, BOLD, "ERROR: too many iterations in Dump\n");
+            color_printf(RED_COLOR, BOLD, "Probably you did invalid operation (Used bad index for example)\n");
 
-            check_expression(count_elements < llist->capacity, PROGRAM_ERROR);
+            warning(count_elements < llist->capacity, PROGRAM_ERROR);
         }
         fprintf(dump_file, "%d->%d;\n", i, llist->prev[i]);
         i = llist->prev[i];
@@ -106,13 +106,13 @@ TYPE_OF_ERROR llistDump(LinkedList* llist) {
     return SUCCESS;
 }
 
-TYPE_OF_ERROR setDumpFile(LinkedList* llist)
+LlistErrors setDumpFile(LinkedList* llist)
 {
-    check_expression(llist, POINTER_IS_NULL);
+    warning(llist, NULL_POINTER_ERROR);
 
     char *buffer = (char*)calloc(SIZE_OF_BUFFER, sizeof(char));
 
-    warning(buffer, CALLOC_ERROR);
+    warning(buffer, ALLOCATION_ERROR);
 
     time_t my_time          = time(NULL);
     char*  time             = ctime(&my_time);
@@ -133,8 +133,8 @@ TYPE_OF_ERROR setDumpFile(LinkedList* llist)
     return SUCCESS;
 }
 
-inline TYPE_OF_ERROR processFilename(char* filename) {
-    check_expression(filename, POINTER_IS_NULL);
+inline LlistErrors processFilename(char* filename) {
+    warning(filename, NULL_POINTER_ERROR);
 
     char* filename_ptr = filename;
     filename_ptr = strchr(filename_ptr, ' ');
